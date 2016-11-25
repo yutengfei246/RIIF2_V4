@@ -1,7 +1,4 @@
 
-
-//TODO: First Task: Extended Tevmplate Feature (ETF)
-//TODO: 1) TABLE 2) [#] operator
 grammar RIIF2;
 
 /*Programmar File RIIF-2 */
@@ -234,7 +231,7 @@ associativeInstanceAttributeId
     ;
 
 tableSharpOperator
-    : variableDeclaratorId '\'' Identifier '[' '#' ']' '[' Identifier ']'
+    : variableId '\'' Identifier '[' '#' ']' '[' Identifier ']'
     ;
 
 
