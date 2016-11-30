@@ -1,10 +1,8 @@
 grammar RIIF2;
-
-
 //TODO: some of the attribute tokens are necessary some of them are not
 //TODO: table access
 //TODO: Build Object with HashTable (VariableTable)
-//TODO: table access rules
+//TODO: predicate ?
 
 /*Programmar File RIIF-2 */
 program
@@ -36,7 +34,6 @@ componentBodyElement
     | assertion
     ;
 
-//TODO: we can have both parameter assocArray or paramter assocArrayInstance
 fieldDeclaration
     : typeType fieldElement ';'
     ;
@@ -47,7 +44,6 @@ fieldElement
     | associativeInstanceDeclarator
     ;
 
-//TODO: keyWorld type id;
 childComponentDeclaration
     : CHILD_COMPONENT childComponentDeclarator ';'
     ;
@@ -60,8 +56,6 @@ childComponentDeclaratorId
     : variableId
     ;
 
-//TODO: the type in assignemnt-in-line is necessary
-//TODO: fail_mode with parameter prefix is not allowed
 failModeDeclaration
     : FAIL_MODE failModeDeclarator ';'
     ;
@@ -178,7 +172,7 @@ assignmentDeclarator
 assignmentDeclaratorId
     : assignmentVariableId
     | assignmentVariableAttributeId
-    | tableSharpOperator
+    | assignmentTableId
     ;
 
 assignmentVariableId
@@ -186,7 +180,8 @@ assignmentVariableId
     ;
 
 assignmentVariableAttributeId
-    : assignmentVariableId ( '\'' Identifier)
+    : assignmentVariableId
+      '\'' Identifier  // notice that some of the identifier should be necessarily required
     ;
 
 assignmentInitializer
@@ -239,10 +234,11 @@ associativeInstanceAttributeId
     : associativeInstanceId ( '\'' Identifier )
     ;
 
-tableSharpOperator
-    : variableId '\'' Identifier '[' '#' ']' '[' Identifier ']'
+assignmentTableId
+    : variableDeclaratorId '\'' Identifier // this identifier has to be ITEMS
+     '[' ('#'| Identifier) ']'
+     '[' Identifier ']'
     ;
-
 
 primitiveType
     : TYPE_FLOAT
@@ -261,10 +257,6 @@ enumType
     : TYPE_ENUM '{' Identifier ( ',' Identifier)* '}'
     ;
 
-tableAttribute
-    : ITEMS
-    | HEADER
-    ;
 
 
 /*RIIF-2: ANTlr.4 expression (Same with JAVA)*/
@@ -333,6 +325,7 @@ literal
 
 
 
+
 // Lexer
 
 // §RIIF-2-v4 Keywords
@@ -370,15 +363,6 @@ SELF: 'self';
 SET: 'set';
 TYPE_TABLE: 'table';
 PLATFORM: 'platform';
-//TODO: Table's attributes are keyword and only have the keywords
-//need to be trackled, since the compiler dose not know the references are table or not at compiling time.
-//ITEMS: 'ITEMS';
-//HEADER: 'HEADER';
-
-//TODO: attributes key wordwords that necessary to be shown are listed below
-// same with attribute ? we may need parser to handle this situation.
-//ATTRIBUTE_FIELD_UNIT: 'unit';
-//ATTRIBUTE_FAIL_MODE_RATE: 'rate';
 
 /*Identification */
 Identifier
