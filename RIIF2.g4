@@ -1,5 +1,10 @@
-
 grammar RIIF2;
+
+
+//TODO: some of the attribute tokens are necessary some of them are not
+//TODO: table access
+//TODO: Build Object with HashTable (VariableTable)
+//TODO: table access rules
 
 /*Programmar File RIIF-2 */
 program
@@ -15,9 +20,9 @@ typeDeclaration
     ;
 
 componentDeclaration
-    : COMPONENT Identifier
-      (EXTENDS Identifier (',' Identifier)*)?
-      (IMPLEMENTS Identifier (',' Identifier)*)?  ';'
+    : COMPONENT comId=Identifier
+      (EXTENDS comEx=Identifier (',' comEx1+=Identifier)*)?
+      (IMPLEMENTS comImpl=Identifier (',' comImpl1+=Identifier)*)?  ';'
       componentBodyElement*
       END_COMPONENT
     ;
@@ -31,6 +36,7 @@ componentBodyElement
     | assertion
     ;
 
+//TODO: we can have both parameter assocArray or paramter assocArrayInstance
 fieldDeclaration
     : typeType fieldElement ';'
     ;
@@ -41,6 +47,7 @@ fieldElement
     | associativeInstanceDeclarator
     ;
 
+//TODO: keyWorld type id;
 childComponentDeclaration
     : CHILD_COMPONENT childComponentDeclarator ';'
     ;
@@ -53,6 +60,8 @@ childComponentDeclaratorId
     : variableId
     ;
 
+//TODO: the type in assignemnt-in-line is necessary
+//TODO: fail_mode with parameter prefix is not allowed
 failModeDeclaration
     : FAIL_MODE failModeDeclarator ';'
     ;
@@ -96,8 +105,7 @@ associativeDeclaration
     ;
 
 abstractFailModeDeclaration
-    : FAIL_MODE associativeDeclarator ';'
-    | ABSTRACT FAIL_MODE variableId ';'
+    : ABSTRACT failModeDeclaration
     ;
 
 abstractPlatformDeclaration
@@ -123,6 +131,7 @@ imposeInitializer
 variableDeclarator
     : variableDeclaratorId
       ( ':' primitiveType ( ':=' variableInitializer )?
+      | ':' TYPE_TABLE            //Tables are not allowed assigned in-line ?
       | ':=' listInitializer
       )
     ;
@@ -131,7 +140,7 @@ associativeInstanceDeclarator
     : associativeInstanceDeclaratorId ('=' associativeInstanceDeclaratorInitializer )?
     ;
 
-associativeInstanceDeclaratorId
+associativeInstanceDeclaratorId  // both associtiave instance and associative attribute
     : associativeInstanceId
     | associativeInstanceAttributeId
     ;
@@ -239,7 +248,6 @@ primitiveType
     : TYPE_FLOAT
     | TYPE_INTEGER
     | TYPE_STRING
-    | TYPE_TABLE
     | Identifier
     | enumType
     ;
@@ -251,6 +259,11 @@ typeType
 
 enumType
     : TYPE_ENUM '{' Identifier ( ',' Identifier)* '}'
+    ;
+
+tableAttribute
+    : ITEMS
+    | HEADER
     ;
 
 
@@ -290,6 +303,7 @@ expression
 primary
     : '(' expression ')'
     | SELF
+    | Identifier // for user defined or enum
     | assignmentDeclaratorId
     | literal
     | funcCall
@@ -316,6 +330,8 @@ literal
     | DecimalLiteral
     | FloatingPointLiteral
     ;
+
+
 
 // Lexer
 
@@ -354,8 +370,15 @@ SELF: 'self';
 SET: 'set';
 TYPE_TABLE: 'table';
 PLATFORM: 'platform';
+//TODO: Table's attributes are keyword and only have the keywords
+//need to be trackled, since the compiler dose not know the references are table or not at compiling time.
 //ITEMS: 'ITEMS';
 //HEADER: 'HEADER';
+
+//TODO: attributes key wordwords that necessary to be shown are listed below
+// same with attribute ? we may need parser to handle this situation.
+//ATTRIBUTE_FIELD_UNIT: 'unit';
+//ATTRIBUTE_FAIL_MODE_RATE: 'rate';
 
 /*Identification */
 Identifier
